@@ -36,6 +36,8 @@ const readyVersion = `{"name":"@runtimeconditions/typescript-profiler","version"
 
 const javaVersion = `{"name":"runtimeconditions-java-profiler","version":"0.1.0","coreSchemas":["0.4.0"]}`
 
+const pythonVersion = `{"name":"runtimeconditions-python-profiler","version":"0.5.0","coreSchemas":["0.4.0"]}`
+
 func deps(runner process.Runner, installed ...string) Dependencies {
 	present := map[string]bool{}
 	for _, name := range installed {
@@ -161,10 +163,11 @@ func TestPluginsListReportsEveryStatus(t *testing.T) {
 		t.Fatalf("an add-on with its own runtime is ready without node: %+v", packaged[1])
 	}
 	ready := read(deps(&fakeRunner{version: readyVersion}, "rc-profiler-typescript", "node"))
-	if len(ready) != 3 || ready[0].Language != "go" || ready[0].Status != "built-in" ||
+	if len(ready) != 4 || ready[0].Language != "go" || ready[0].Status != "built-in" ||
 		ready[1].Language != "typescript" || ready[1].Status != "ready" || ready[1].Version != "0.2.0" ||
 		ready[1].Path != "/usr/bin/rc-profiler-typescript" || ready[1].Origin != "path" ||
-		ready[2].Language != "java" || ready[2].Status != "missing" {
+		ready[2].Language != "java" || ready[2].Status != "missing" ||
+		ready[3].Language != "python" || ready[3].Status != "missing" {
 		t.Fatalf("%+v", ready)
 	}
 	java := read(deps(&fakeRunner{version: javaVersion}, "rc-profiler-java"))
@@ -174,6 +177,11 @@ func TestPluginsListReportsEveryStatus(t *testing.T) {
 	}
 	if incompatible := read(deps(&fakeRunner{version: `{"name":"x","version":"1","coreSchemas":["0.3.0"]}`}, "rc-profiler-java")); incompatible[2].Status != "incompatible" {
 		t.Fatalf("%+v", incompatible[2])
+	}
+	python := read(deps(&fakeRunner{version: pythonVersion}, "runtimeconditions-python-profiler"))
+	if python[3].Language != "python" || python[3].Status != "ready" || python[3].Version != "0.5.0" ||
+		python[3].Path != "/usr/bin/runtimeconditions-python-profiler" || python[3].Origin != "path" {
+		t.Fatalf("a Python profiler on PATH is ready without python on PATH: %+v", python[3])
 	}
 	for status, d := range map[string]Dependencies{
 		"missing":         deps(&fakeRunner{}),
@@ -190,16 +198,17 @@ func TestPluginsListReportsEveryStatus(t *testing.T) {
 func TestPluginsListTextAndHelp(t *testing.T) {
 	code, out, _ := run(t, deps(&fakeRunner{version: readyVersion}, "rc-profiler-typescript", "node"), "plugins", "list")
 	lines := strings.Split(strings.TrimSpace(out), "\n")
-	if code != 0 || len(lines) != 4 || !strings.HasPrefix(lines[0], "LANGUAGE") ||
+	if code != 0 || len(lines) != 5 || !strings.HasPrefix(lines[0], "LANGUAGE") ||
 		!slices.Equal(strings.Fields(lines[2]), []string{"typescript", "ready", "0.2.0", "/usr/bin/rc-profiler-typescript"}) ||
-		!slices.Equal(strings.Fields(lines[3]), []string{"java", "missing"}) {
+		!slices.Equal(strings.Fields(lines[3]), []string{"java", "missing"}) ||
+		!slices.Equal(strings.Fields(lines[4]), []string{"python", "missing"}) {
 		t.Fatalf("code=%d %q", code, out)
 	}
 	if code, _, errOut := run(t, deps(&fakeRunner{}), "plugins", "list", "--output", "json"); code != 2 || !strings.Contains(errOut, "unsupported output format") {
 		t.Fatalf("code=%d %q", code, errOut)
 	}
 	code, out, _ = run(t, deps(&fakeRunner{}), "profile", "--help")
-	if code != 0 || !strings.Contains(out, "typescript") || !strings.Contains(out, "java") || !strings.Contains(out, "go ") {
+	if code != 0 || !strings.Contains(out, "typescript") || !strings.Contains(out, "java") || !strings.Contains(out, "python") || !strings.Contains(out, "go ") {
 		t.Fatalf("profile help %q", out)
 	}
 }
@@ -248,6 +257,39 @@ func TestJavaAddOnThatIsNotInstalledSaysHowToGetIt(t *testing.T) {
 func TestJavaAddOnForAnotherCoreSchemaIsNotRun(t *testing.T) {
 	runner := &fakeRunner{version: `{"name":"runtimeconditions-java-profiler","version":"0.1.0","coreSchemas":["0.3.0"]}`}
 	code, _, errOut := run(t, deps(runner, "rc-profiler-java"), "profile", "java", "generate")
+	if code != 1 || !strings.Contains(errOut, "0.4.0") || len(runner.calls) != 0 {
+		t.Fatalf("code=%d %q calls=%+v", code, errOut, runner.calls)
+	}
+}
+
+func TestPythonAddOnReceivesItsArgumentsUnchangedAndItsOutputPassesThrough(t *testing.T) {
+	runner := &fakeRunner{version: pythonVersion, output: "profile: yaml\n"}
+	args := []string{"generate", "--project", "./svc", "--name", "orders", "--workload-uri", "https://example.com/o", "--", "--odd", "a b"}
+	code, out, errOut := run(t, deps(runner, "runtimeconditions-python-profiler"), append([]string{"profile", "python"}, args...)...)
+	if code != 0 || out != "profile: yaml\n" || errOut != "" {
+		t.Fatalf("code=%d out=%q err=%q", code, out, errOut)
+	}
+	if len(runner.calls) != 1 || runner.calls[0].Path != "/usr/bin/runtimeconditions-python-profiler" || !slices.Equal(runner.calls[0].Args, args) {
+		t.Fatalf("calls: %+v", runner.calls)
+	}
+}
+
+func TestPythonAddOnThatIsNotInstalledSaysHowToGetIt(t *testing.T) {
+	runner := &fakeRunner{}
+	code, _, errOut := run(t, deps(runner, "node"), "profile", "python", "generate")
+	if code != 1 || strings.Count(errOut, "rc:") != 1 || !strings.Contains(errOut, "Python profiler is not installed") ||
+		!strings.Contains(errOut, "pip install runtimeconditions-profiler") || !strings.Contains(errOut, "RC_PYTHON_PROFILER") ||
+		strings.Contains(errOut, "Usage:") {
+		t.Fatalf("code=%d %q", code, errOut)
+	}
+	if len(runner.calls) != 0 {
+		t.Fatalf("the add-on ran: %+v", runner.calls)
+	}
+}
+
+func TestPythonAddOnForAnotherCoreSchemaIsNotRun(t *testing.T) {
+	runner := &fakeRunner{version: `{"name":"runtimeconditions-python-profiler","version":"0.4.0","coreSchemas":["0.3.0"]}`}
+	code, _, errOut := run(t, deps(runner, "runtimeconditions-python-profiler"), "profile", "python", "generate")
 	if code != 1 || !strings.Contains(errOut, "0.4.0") || len(runner.calls) != 0 {
 		t.Fatalf("code=%d %q calls=%+v", code, errOut, runner.calls)
 	}

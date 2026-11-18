@@ -180,3 +180,38 @@ func TestJavaOverrideNamesAnAbsoluteExecutable(t *testing.T) {
 		t.Fatalf("%+v %v", found, err)
 	}
 }
+
+func TestPythonIsFoundByItsConsoleScriptAndNeedsNoRuntimeOnPath(t *testing.T) {
+	// The console script starts the interpreter of the environment it was installed in.
+	installed := map[string]string{"runtimeconditions-python-profiler": "/work/.venv/bin/runtimeconditions-python-profiler"}
+	found, err := finder(installed, nil).Find(Python)
+	if err != nil || found.Path != "/work/.venv/bin/runtimeconditions-python-profiler" || found.Origin != "path" {
+		t.Fatalf("%+v %v", found, err)
+	}
+	if got := finder(installed, nil).MissingRuntime(Python); got != "" {
+		t.Fatalf("Python lists no runtime, got %q", got)
+	}
+}
+
+func TestPythonMissingSaysHowToInstallIt(t *testing.T) {
+	_, err := finder(map[string]string{}, nil).Find(Python)
+	if err == nil {
+		t.Fatal("expected an error")
+	}
+	for _, want := range []string{"Python profiler is not installed", "runtimeconditions-python-profiler", "install it with: " + Python.InstallHint, "RC_PYTHON_PROFILER"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("%q is missing from %q", want, err)
+		}
+	}
+}
+
+func TestPythonOverrideNamesAnAbsoluteExecutable(t *testing.T) {
+	installed := map[string]string{"/work/.venv/bin/runtimeconditions-python-profiler": "/work/.venv/bin/runtimeconditions-python-profiler"}
+	found, err := finder(installed, map[string]string{Python.OverrideEnv: "/work/.venv/bin/runtimeconditions-python-profiler"}).Find(Python)
+	if err != nil || found.Path != "/work/.venv/bin/runtimeconditions-python-profiler" || found.Origin != "override" {
+		t.Fatalf("%+v %v", found, err)
+	}
+	if _, err := finder(installed, map[string]string{Python.OverrideEnv: "runtimeconditions-python-profiler"}).Find(Python); err == nil {
+		t.Fatal("a relative override must be refused")
+	}
+}

@@ -56,8 +56,20 @@ var Java = Language{
 	InstallHint: "download rc-profiler-java from https://github.com/runtimeconditions/java-rc-profiler/releases and put it on PATH",
 }
 
+// Python is the Python profiler, published to PyPI as runtimeconditions-profiler. It finds binding packages through the
+// metadata of the Python environment it is installed in, so it has to be installed in the workload's own environment,
+// not in an isolated one such as pipx makes. That environment's bin directory goes on PATH, or RC_PYTHON_PROFILER names
+// the script. Its console script starts the interpreter of that environment, so rc lists no runtime for it.
+var Python = Language{
+	ID:          "python",
+	Display:     "Python",
+	Executables: []string{"runtimeconditions-python-profiler"},
+	OverrideEnv: "RC_PYTHON_PROFILER",
+	InstallHint: "pip install runtimeconditions-profiler in the workload's virtual environment, then put that environment's bin directory on PATH",
+}
+
 // Languages returns the optional languages rc supports.
-func Languages() []Language { return []Language{TypeScript, Java} }
+func Languages() []Language { return []Language{TypeScript, Java, Python} }
 
 // Finder looks up executables. Tests replace both functions.
 type Finder struct {
