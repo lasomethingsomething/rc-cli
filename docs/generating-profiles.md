@@ -1,0 +1,121 @@
+# Generating a profile
+
+`rc profile generate` and its prerequisites, in detail. For the one-step quickstart see the
+[README](../README.md#quickstart).
+
+`rc profile generate` reads the Go binding declarations in a workload and writes a validated
+profile. It analyzes declarations statically and never runs your code. Three prerequisites:
+
+1. **A Go toolchain on `PATH`.** Without one, generation fails with
+   `exec: "go": executable file not found in $PATH`. `rc` does not download Go for you.
+2. **`--dir` must point at a directory containing a `go.mod`.** Current releases fail fast:
+
+   ```text
+   rc: /path/to/dir: workload must have a go.mod: stat /path/to/dir/go.mod: no such file or directory
+   ```
+
+   Older releases (for example the Homebrew v0.6.0 build) fell back to GOPATH mode and scanned
+   your entire home directory, spraying `operation not permitted` errors for TCC-protected
+   paths. Always point `--dir` at a Go module.
+3. **The workload must import published RC binding modules** (`runtimeconditions.io/x/rc/...`).
+   Bindings wired with `go.mod` `replace` directives to a local clone are rejected **by
+   design**:
+
+   ```text
+   rc: github.com/runtimeconditions/extensions/catalog/rc/common-integrations/go uses a go.mod replace; generated bindings must resolve to a published module version
+   ```
+
+   This is why a fresh clone of `rc-demos/apps/request-logger-http` cannot be generated: its
+   `go.mod` replaces the binding modules with a sibling checkout of `extensions`. Generate
+   from a module that requires the published versions instead.
+
+## Example workload
+
+`go.mod`:
+
+```go
+module example.com/my-service
+
+go 1.25.0
+
+require (
+	runtimeconditions.io/x/rc/common v0.3.0
+	runtimeconditions.io/x/rc/env v0.3.0
+)
+```
+
+`main.go` — declare conditions with the published binding packages:
+
+```go
+package main
+
+import (
+	"runtimeconditions.io/x/rc/common"
+	"runtimeconditions.io/x/rc/env"
+)
+
+var todosAPI = common.Api(
+	common.Http{
+		Spec: &common.Spec{Format: common.FormatOpenapi, Uri: "catalog://api/default/todos-api"},
+		Operations: common.HttpOperations{
+			{Method: common.MethodGet, Path: "/todos/{id}",
+				ResponseSchema: common.ResponseSchemaMap{"id": common.SimpleSchemaStringInteger}},
+		},
+	},
+	env.HttpConfiguration{
+		Env: env.HttpConfigurationEnv{
+			{Name: "TODOS_API_URL", Property: env.HttpConfigurationEnvPropertyBaseUrl},
+		},
+	},
+)
+
+var requestCache = common.Cache(
+	common.KeyValue{Engine: &[]common.KeyValueEngine{common.KeyValueEngineRedis}[0]},
+	env.KeyValueConfiguration{
+		Env: env.KeyValueConfigurationEnv{
+			{Name: "REDIS_URL", Property: env.KeyValueConfigurationEnvPropertyUrl},
+		},
+	},
+)
+
+func main() {}
+```
+
+Resolve dependencies, then generate:
+
+```sh
+go mod tidy
+rc profile generate --dir ./my-service --out profile.yaml
+```
+
+Defaults: `--dir` is the current directory, `--out` is stdout, `--name` is the directory's
+basename, `--workload-uri` is the enclosing Go module path, `--workload-version` is `dev`.
+A failed generation leaves an existing `--out` file unchanged. You can set them explicitly:
+
+```sh
+rc profile generate \
+  --dir ./my-service \
+  --name my-service \
+  --workload-uri https://example.com/my-service \
+  --workload-version 1.0.0 \
+  --out profile.yaml
+```
+
+**Verified status today:** a workload importing only `runtimeconditions.io/x/rc/common@v0.3.0`
+generates a profile that passes `rc profile validate`, end to end. Adding
+`runtimeconditions.io/x/rc/env@v0.3.0` currently fails dependency artifact verification with:
+
+```text
+rc: runtimeconditions.io/x/rc/env dependency runtimeconditions.io/x/rc/common: dependency Go module archive SHA-256 mismatch
+```
+
+The published-module pattern above is the supported direction; treat that error as a
+known gap in the current published `env` release, not as a mistake in your workload.
+
+## Checking a workload's bindings
+
+```sh
+rc profile validate-extensions --dir ./my-service
+rc profile validate-extension --dir ./my-service --package runtimeconditions.io/x/rc/common
+rc profile go version    # linked Go profiler version, e.g. "go-rc-profiler v0.8.0 (linked into rc)"
+```
