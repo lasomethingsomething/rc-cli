@@ -9,7 +9,8 @@ and **validates** profiles against the spec and the extensions it declares, whet
 profile was written by hand, by an agent, or by a profiler. The profile states the demand;
 platforms and adapters decide how to fulfill it.
 
-**Example scenario:** Your service depends on a Todos API reachable at `TODOS_API_URL` and a
+**Example scenario:** Your service depends on a [Todos API](https://github.com/runtimeconditions/rc-demos/tree/main/apps/todos-api)
+reachable at `TODOS_API_URL` and a
 Redis cache at `REDIS_URL`. Today that knowledge lives in a wiki page or someone's head, and
 the platform team provisions from a guess. A Runtime Conditions Profile writes it down where
 the code lives: you declare the need once in your source, `rc profile generate` reads those
@@ -40,10 +41,12 @@ sudo apt install rc-cli    # Debian / Ubuntu
 sudo dnf install rc-cli    # Fedora / RHEL
 ```
 
-Language profilers are separate add-ons: Go profiling is built into `rc`, so Go workloads
-need nothing else. TypeScript, Java, and Python profilers install through their own channels
-— see [Language profilers](docs/language-profilers.md). To build the CLI yourself, see
-[Build from source](docs/build-from-source.md).
+Also:
+
+- Language profilers are separate add-ons. Go profiling is built into `rc`, so Go workloads
+  need nothing else. TypeScript, Java, and Python profilers install through their own
+  channels — see [Language profilers](docs/language-profilers.md).
+- To build the CLI yourself, see [Build from source](docs/build-from-source.md).
 
 ## Quickstart
 
@@ -56,10 +59,10 @@ $ rc profile validate rc-demos/artifacts/request-logger-http.profile.yaml
 runtimeconditions: profile validated
 ```
 
-`rc profile validate` checks any profile against the core schema embedded in `rc` and the
-definitions of the extensions it declares — downloaded from their `https` ids by default, or
-read from local directories with `--catalog <dir>` (repeatable). `-` reads the profile from
-stdin.
+`rc profile validate` checks a profile against the core schema embedded in `rc` and against
+the definitions of the extensions it declares. By default those definitions are downloaded
+from the `https` ids the profile names. Pass `--catalog <dir>` (repeatable) to read them from
+local directories instead. Use `-` to read the profile from stdin.
 
 ## Commands
 
@@ -77,11 +80,12 @@ java        missing
 python      missing
 ```
 
-`go` is the profiler linked into `rc` — nothing extra to install. `missing` add-ons only
-matter for workloads in that language; `rc plugins list --output yaml` prints each one's
-install command. `rc version --output yaml` adds platform and linked-component details.
-`rc --help` lists all commands; `rc completion <bash|zsh|fish|powershell>` prints a shell
-completion script.
+- `go` is the profiler linked into `rc` — nothing extra to install.
+- `missing` add-ons only matter for workloads in that language;
+  `rc plugins list --output yaml` prints each one's install command.
+- `rc version --output yaml` adds platform and linked-component details.
+- `rc --help` lists all commands; `rc completion <bash|zsh|fish|powershell>` prints a shell
+  completion script.
 
 `rc profile` uses the built-in Go profiler by default; the same commands exist under
 `rc profile go` with identical flags:
