@@ -20,7 +20,9 @@ can read the same file and fulfill the need. No re-explaining, no drift between 
 reality.
 
 - Guide and concepts: <https://runtimeconditions.io>
-- Profile specification: <https://github.com/runtimeconditions/spec>
+- Profile specification: <https://github.com/runtimeconditions/spec> — defines the profile
+  format. `rc` pins the spec's core schema (checksum-verified) at build time and validates
+  every profile against it.
 
 ## Install
 
@@ -50,25 +52,30 @@ Also:
 
 ## Quickstart
 
-The one hands-on step that works on a fresh install — validating an existing profile, not
-creating one yet:
+This works on a fresh install. It validates a committed demo profile; it does not create
+one:
 
 ```console
+# Check a profile against the core schema embedded in rc and the
+# definitions of the extensions it declares:
 $ git clone https://github.com/runtimeconditions/rc-demos.git
 $ rc profile validate rc-demos/artifacts/request-logger-http.profile.yaml
 runtimeconditions: profile validated
-```
 
-`rc profile validate` checks a profile against the core schema embedded in `rc` and against
-the definitions of the extensions it declares. By default those definitions are downloaded
-from the `https` ids the profile names. Pass `--catalog <dir>` (repeatable) to read them from
-local directories instead. Use `-` to read the profile from stdin.
+# Definitions download from the https ids the profile names by default;
+# use --catalog <dir> (repeatable) to read them from local directories:
+$ rc profile validate profile.yaml --catalog ./my-extensions
+# Use - to read the profile from stdin:
+$ rc profile validate - < profile.yaml
+```
 
 ## Commands
 
 ```console
 $ rc --version
 rc v0.6.0 (a1b2c3d)
+# rc version --output yaml adds platform and linked-component details:
+$ rc version --output yaml
 ```
 
 ```console
@@ -78,14 +85,12 @@ go          built-in  v0.8.0
 typescript  missing
 java        missing
 python      missing
+# --output yaml prints each missing add-on's install command:
+$ rc plugins list --output yaml
 ```
 
 - `go` is the profiler linked into `rc` — nothing extra to install.
-- `missing` add-ons only matter for workloads in that language;
-  `rc plugins list --output yaml` prints each one's install command.
-- `rc version --output yaml` adds platform and linked-component details.
-- `rc --help` lists all commands; `rc completion <bash|zsh|fish|powershell>` prints a shell
-  completion script.
+- `missing` add-ons only matter for workloads in that language.
 
 `rc profile` uses the built-in Go profiler by default; the same commands exist under
 `rc profile go` with identical flags:
@@ -99,7 +104,8 @@ python      missing
 | `rc profile version` | Show the linked Go profiler version. |
 
 Every command has `--help` for its full flag list, e.g. `rc profile go generate --help` and
-`rc bindings --help`.
+`rc bindings --help`. `rc completion <bash|zsh|fish|powershell>` prints a shell completion
+script.
 
 ## Documentation
 
@@ -110,7 +116,6 @@ Every command has `--help` for its full flag list, e.g. `rc profile go generate 
 
 ## Ecosystem
 
-- [spec](https://github.com/runtimeconditions/spec) — the profile specification and docs
 - [extensions](https://github.com/runtimeconditions/extensions) — first-party extensions and binding tooling
 - [rc-demos](https://github.com/runtimeconditions/rc-demos) — end-to-end demos with committed profiles
 - [go-rc-profiler](https://github.com/runtimeconditions/go-rc-profiler) — Go profiler, linked into `rc`
