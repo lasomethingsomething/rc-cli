@@ -97,18 +97,9 @@ python      missing
 | `rc profile validate-extensions` | Validate all imported generated binding packages. Flag: `--dir`. |
 | `rc profile validate-extension` | Validate one imported binding package. Flags: `--dir`, `--package`. |
 | `rc profile version` | Show the linked Go profiler version. |
-| `rc plugins list [--output yaml]` | Show the Go profiler and each add-on's status, version, and path. |
-| `rc version [--output text\|yaml]` | Show CLI build information. `rc --version` prints the same one-liner. |
-| `rc completion <bash\|zsh\|fish\|powershell>` | Print a shell completion script. |
 
-For full flag lists:
-
-```sh
-rc profile --help
-rc profile go --help
-rc profile go generate --help
-rc bindings --help
-```
+Every command has `--help` for its full flag list, e.g. `rc profile go generate --help` and
+`rc bindings --help`.
 
 ## Documentation
 
