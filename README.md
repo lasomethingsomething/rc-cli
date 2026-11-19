@@ -1,15 +1,15 @@
 # rc-cli
 
-`rc` is the Runtime Conditions CLI. It **generates** Runtime Conditions Profiles from your
-workload's binding declarations and **validates** profiles against the spec — whether the
-profile was written by hand, by an agent, or by a profiler.
+`rc-cli` is the Runtime Conditions CLI. A Runtime Conditions Profile is a portable, machine-readable list of what one workload needs at runtime: the APIs, caches, datastores, and environment configuration it depends on. 
+
+`rc-cli` generates Runtime Conditions Profiles from your workload's binding declarations and validates profiles against the spec and the extensions it declares, whether the profile was written by hand, by an agent, or by a profiler. The profile states the demand; platforms and adapters such as Kratix, Crossplane, and Radius decide how to fulfill it.
 
 - Guide and concepts: <https://runtimeconditions.io>
 - Profile specification: <https://github.com/runtimeconditions/spec>
 
 ## Install
 
-The package is named `rc-cli`; the executable is named `rc`.
+The package is named `rc-cli`. The executable is named `rc`.
 
 **Homebrew (macOS and Linux):**
 
@@ -26,9 +26,11 @@ sudo apt install rc-cli    # Debian / Ubuntu
 sudo dnf install rc-cli    # Fedora / RHEL
 ```
 
-**Language profilers are separate add-ons** — Go profiling is built into `rc`; TypeScript,
-Java, and Python profilers install through their own channels. See
-[Optional language profilers](#optional-language-profilers).
+Language profilers are separate add-ons. A profiler reads your workload's code and
+generates its profile:
+
+- Go profiling is built into `rc`, so Go workloads need nothing else.
+- TypeScript, Java, and Python profilers install through their own channels; see [Optional language profilers](#optional-language-profilers).
 
 **From source:** see [Build from source](#build-from-source).
 
@@ -62,8 +64,8 @@ completion script.
 
 ## Quickstart: validate an existing profile
 
-This is the one hands-on step that works on a fresh install — no toolchain, no workload of
-your own. It checks a committed demo profile, it does not create a profile yet:
+This is the one hands-on step that works on a fresh install. It checks a committed demo profile.
+It does not create a profile yet:
 
 ```sh
 git clone https://github.com/runtimeconditions/rc-demos.git
