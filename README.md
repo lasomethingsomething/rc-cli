@@ -71,6 +71,8 @@ $ rc profile validate - < profile.yaml
 
 ## Commands
 
+Check the install — real output:
+
 ```console
 $ rc --version
 rc v0.6.0 (a1b2c3d)
@@ -93,7 +95,7 @@ $ rc plugins list --output yaml
 - `missing` add-ons only matter for workloads in that language.
 
 `rc profile` uses the built-in Go profiler by default; the same commands exist under
-`rc profile go` with identical flags:
+`rc profile go` with identical flags. Full command list:
 
 | Command | Purpose |
 | --- | --- |
@@ -102,10 +104,12 @@ $ rc plugins list --output yaml
 | `rc profile validate-extensions` | Validate all imported generated binding packages. Flag: `--dir`. |
 | `rc profile validate-extension` | Validate one imported binding package. Flags: `--dir`, `--package`. |
 | `rc profile version` | Show the linked Go profiler version. |
+| `rc plugins list [--output yaml]` | Show the Go profiler and each add-on's status, version, and path. |
+| `rc version [--output text\|yaml]` | Show CLI build information. `rc --version` prints the same one-liner. |
+| `rc completion <bash\|zsh\|fish\|powershell>` | Print a shell completion script. |
 
 Every command has `--help` for its full flag list, e.g. `rc profile go generate --help` and
-`rc bindings --help`. `rc completion <bash|zsh|fish|powershell>` prints a shell completion
-script.
+`rc bindings --help`.
 
 ## Documentation
 
