@@ -35,8 +35,10 @@ CI tests Linux and macOS on amd64 and arm64. It relocates the staged executable 
 resources, exercises all eight binding operations, installs a freshly generated Go module
 through a local proxy, and profiles its declarations through both Go command routes.
 Negative checks cover altered committed source, nonempty output directories, and invalid
-declarations preserving existing profile output. The small extension fixture is checked in as
-YAML under `testdata/ci/bindings/`; generated packages, archives, profiles, and module caches
-remain temporary CI outputs. Homebrew and APT/RPM packaging live in
-[`homebrew-tools`](https://github.com/runtimeconditions/homebrew-tools) and
-[`packages`](https://github.com/runtimeconditions/packages).
+declarations preserving existing profile output. Only Go is available on the smoke test's
+subprocess PATH; Python is used by the CI harness, and is not a runtime dependency of Go
+binding or profiling commands.
+
+The small extension fixture is checked in as YAML under `testdata/ci/bindings/`. Generated
+packages, archives, profiles, and module caches remain temporary CI outputs. Homebrew/APT
+packaging and optional profiler add-ons remain planned.

@@ -2,7 +2,7 @@
 
 This page is for extension authors and contributors who generate, verify, or release binding
 packages. Users profiling a workload only need the `rc profile` commands — see the
-[command reference](command-reference.md).
+[command table](../README.md#commands).
 
 `rc bindings` resolves, generates, and verifies extension bindings. The command group
 provides `resolve`, `normalize`, `generate`, `verify`, `package`, `plan-release`, `check`,
@@ -11,9 +11,11 @@ binding library from `extensions`.
 
 Binding commands also require the shared YAML schemas. Installed layouts place them under
 `share/rc/extension-bindings/model/`, alongside `bin/rc`. CI stages these files from the
-exact `extensions` commit in `distribution/components.lock.yaml`.
+exact `extensions` commit in `distribution/components.lock.yaml`; they remain ordinary YAML
+files.
 
-For local binding development, supply `--tooling-dir` pointing to matching schema resources,
+The local build helper builds the executable. For local binding development, supply
+`--tooling-dir` pointing to matching schema resources,
 such as the `tooling/extension-bindings` directory in a checkout of that pinned revision:
 
 ```sh

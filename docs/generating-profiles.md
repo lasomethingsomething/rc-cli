@@ -4,7 +4,8 @@
 [README](../README.md#quickstart).
 
 `rc profile generate` reads the Go binding declarations in a workload and writes a validated
-profile. It analyzes declarations statically and never runs your code. Three prerequisites:
+profile. Profiling analyzes declarations without executing the workload. Resolve the
+workload's Go binding dependencies before running these commands. Three prerequisites:
 
 1. **A Go toolchain on `PATH`.** Without one, generation fails with
    `exec: "go": executable file not found in $PATH`. `rc` does not download Go for you.

@@ -97,12 +97,18 @@ completion script.
 | `rc version [--output text\|yaml]` | Show CLI build information. `rc --version` prints the same one-liner. |
 | `rc completion <bash\|zsh\|fish\|powershell>` | Print a shell completion script. |
 
-Full flag lists: [Command reference](docs/command-reference.md).
+For full flag lists:
+
+```sh
+rc profile --help
+rc profile go --help
+rc profile go generate --help
+rc bindings --help
+```
 
 ## Documentation
 
 - [Generating a profile](docs/generating-profiles.md) — prerequisites, example workload, flags
-- [Command reference](docs/command-reference.md) — every command and flag
 - [Language profilers](docs/language-profilers.md) — TypeScript, Java, Python add-ons
 - [Binding commands](docs/bindings.md) — `rc bindings`, for extension authors
 - [Build from source](docs/build-from-source.md) — building and hacking on `rc` itself
