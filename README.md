@@ -53,17 +53,19 @@ Also:
 ## Quickstart
 
 This works on a fresh install. It validates a committed demo profile; it does not create
-one:
+one.
+
+Check a profile against the core schema embedded in rc and the definitions of the extensions it declares:
 
 ```console
-# Check a profile against the core schema embedded in rc and the
-# definitions of the extensions it declares:
 $ git clone https://github.com/runtimeconditions/rc-demos.git
 $ rc profile validate rc-demos/artifacts/request-logger-http.profile.yaml
 runtimeconditions: profile validated
+```
 
-# Definitions download from the https ids the profile names by default;
-# use --catalog <dir> (repeatable) to read them from local directories:
+Definitions download from the https ids the profile names by default. Use `--catalog <dir>` (repeatable) to read them from local directories:
+
+```console
 $ rc profile validate profile.yaml --catalog ./my-extensions
 # Use - to read the profile from stdin:
 $ rc profile validate - < profile.yaml
@@ -71,7 +73,7 @@ $ rc profile validate - < profile.yaml
 
 ## Commands
 
-Check the install — real output:
+Verify the install:
 
 ```console
 $ rc --version
@@ -91,7 +93,7 @@ python      missing
 $ rc plugins list --output yaml
 ```
 
-- `go` is the profiler linked into `rc` — nothing extra to install.
+- `go` is the profiler linked into `rc`; nothing extra to install.
 - `missing` add-ons only matter for workloads in that language.
 
 `rc profile` uses the built-in Go profiler by default; the same commands exist under
