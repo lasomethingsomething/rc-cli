@@ -60,9 +60,10 @@ python      missing
 `rc --help` lists all commands; `rc completion <bash|zsh|fish|powershell>` prints a shell
 completion script.
 
-## Quickstart: your first profile — validating an existing one
+## Quickstart: validate an existing profile
 
-This works on a fresh install with no toolchain and no workload of your own:
+This is the one hands-on step that works on a fresh install — no toolchain, no workload of
+your own. It checks a committed demo profile, it does not create a profile yet:
 
 ```sh
 git clone https://github.com/runtimeconditions/rc-demos.git
