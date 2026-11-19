@@ -2,7 +2,9 @@
 
 `rc-cli` is the Runtime Conditions CLI. A Runtime Conditions Profile is a portable, machine-readable list of what one workload needs at runtime: the APIs, caches, datastores, and environment configuration it depends on. 
 
-`rc-cli` generates Runtime Conditions Profiles from your workload's binding declarations and validates profiles against the spec and the extensions it declares, whether the profile was written by hand, by an agent, or by a profiler. The profile states the demand; platforms and adapters such as Kratix, Crossplane, and Radius decide how to fulfill it.
+`rc-cli` **generates** Runtime Conditions Profiles from your workload's binding declarations and **validates** profiles against the spec and the extensions it declares, whether the profile was written by hand, by an agent, or by a profiler. The profile states the demand; platforms and adapters decide how to fulfill it.
+
+**Example scenario:** Your service depends on a Todos API reachable at `TODOS_API_URL` and a Redis cache at `REDIS_URL`. Today that knowledge lives in a wiki page or someone's head, and the platform team provisions from a guess. A Runtime Conditions Profile writes it down where the code lives: you declare the need once in your source, `rc profile generate` reads those declarations and emits the profile as YAML, and `rc profile validate` checks the profile is well-formed and matches the extensions it uses. Then Kratix, Crossplane, Radius, or Backstage can read the same file and fulfill the need. No re-explaining, no drift between docs and reality.
 
 - Guide and concepts: <https://runtimeconditions.io>
 - Profile specification: <https://github.com/runtimeconditions/spec>
@@ -36,7 +38,7 @@ generates its profile:
 
 ## Commands
 
-Check the installation and see which profilers are available:
+Verify the install and see which profilers `rc` can run:
 
 ```sh
 rc --version
@@ -45,6 +47,8 @@ rc --version
 ```text
 rc v0.6.0 (a1b2c3d)
 ```
+
+`rc version --output yaml` adds the Go toolchain, platform, and linked profiler components.
 
 ```sh
 rc plugins list
@@ -58,7 +62,19 @@ java        missing
 python      missing
 ```
 
-`rc plugins list --output yaml` adds each missing add-on's install command.
+`go` is the profiler linked into `rc` — nothing extra to install. `typescript`, `java`, and
+`python` are add-ons: `missing` just means "not installed", which only matters if your
+workload is in that language. `rc plugins list --output yaml` also prints each missing
+add-on's install command, e.g. `install with: npm install --global @runtimeconditions/typescript-profiler`.
+
+`rc --help` lists all commands; `rc completion <bash|zsh|fish|powershell>` prints a shell
+completion script.
+
+`go` is the profiler linked into `rc` — nothing extra to install. `typescript`, `java`, and
+`python` are add-ons: `missing` just means "not installed", which only matters if your
+workload is in that language. `rc plugins list --output yaml` also prints each missing
+add-on's install command, e.g. `install with: npm install --global @runtimeconditions/typescript-profiler`.
+
 `rc --help` lists all commands; `rc completion <bash|zsh|fish|powershell>` prints a shell
 completion script.
 
@@ -89,7 +105,7 @@ rc profile validate - < profile.yaml   # read the profile from stdin
 ## Generating a profile
 
 `rc profile generate` reads the Go binding declarations in a workload and writes a validated
-profile. It analyzes declarations statically — it never runs your code. Three prerequisites:
+profile. It analyzes declarations statically and never runs your code. Three prerequisites:
 
 1. **A Go toolchain on `PATH`.** Without one, generation fails with
    `exec: "go": executable file not found in $PATH`. `rc` does not download Go for you.
