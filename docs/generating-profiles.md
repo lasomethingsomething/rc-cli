@@ -1,7 +1,10 @@
 # Generating a profile
 
 `rc profile generate` and its prerequisites, in detail. For the one-step quickstart see the
-[README](../README.md#quickstart).
+[README](../README.md#quickstart). 
+
+This page covers Go, the profiler built into `rc`; TypeScript, Java, and Python workloads use add-on profilers instead. See
+[Language profilers](language-profilers.md).
 
 `rc profile generate` reads the Go binding declarations in a workload and writes a validated
 profile. Profiling analyzes declarations without executing the workload. Resolve the
