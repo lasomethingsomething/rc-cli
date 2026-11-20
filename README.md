@@ -12,7 +12,7 @@ platforms and adapters decide how to fulfill it.
 **Example scenario:** Your service depends on a [Todos API](https://github.com/runtimeconditions/rc-demos/tree/main/apps/todos-api)
 reachable at `TODOS_API_URL` and a
 Redis cache at `REDIS_URL`. Today that knowledge lives in a wiki page or someone's head, and
-the platform team provisions from a guess. A Runtime Conditions Profile writes it down where
+the platform team provisions based on often incomplete or outdated information. A Runtime Conditions Profile writes it down where
 the code lives: you declare the need once in your source, `rc profile generate` reads those
 declarations and emits the profile as YAML, and `rc profile validate` checks the profile is
 well-formed and matches the extensions it uses. Then Kratix, Crossplane, Radius, or Backstage
