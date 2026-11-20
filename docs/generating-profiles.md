@@ -20,16 +20,6 @@ workload's Go binding dependencies before running these commands. Three prerequi
 
    Always point `--dir` at a Go module.
 3. The workload must import published RC binding modules (`runtimeconditions.io/x/rc/...`).
-   Bindings wired with `go.mod` `replace` directives to a local clone are rejected by
-   design:
-
-   ```text
-   rc: github.com/runtimeconditions/extensions/catalog/rc/common-integrations/go uses a go.mod replace; generated bindings must resolve to a published module version
-   ```
-
-   This is why a fresh clone of `rc-demos/apps/request-logger-http` cannot be generated: its
-   `go.mod` replaces the binding modules with a sibling checkout of `extensions`. Generate
-   from a module that requires the published versions instead.
 
 ## Example workload
 
