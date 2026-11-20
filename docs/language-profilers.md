@@ -4,14 +4,13 @@ Go profiling is built into `rc`. Other languages run a separate add-on that `rc`
 `PATH`. It can come from the language's own tooling or from a system package, and `rc` does
 not care which:
 
-- **TypeScript:** `npm install --global @runtimeconditions/typescript-profiler`, or
-  `brew install runtimeconditions/tools/rc-profiler-typescript`.
-- **Java:** download the launcher `rc-profiler-java` from the
-  [releases](https://github.com/runtimeconditions/java-rc-profiler/releases) of
-  `runtimeconditions/java-rc-profiler` and put it on `PATH`, or
-  `brew install runtimeconditions/tools/rc-profiler-java`.
+- **TypeScript:** `brew install runtimeconditions/tools/rc-profiler-typescript`,
+  `apt install rc-profiler-typescript` (Debian/Ubuntu), or `dnf`/`yum install rc-profiler-typescript`
+  (Fedora/RHEL). apt/dnf/yum need the [package source setup](../README.md#install) first.
+- **Java:** `brew install runtimeconditions/tools/rc-profiler-java`,
+  `apt install rc-profiler-java`, or `dnf`/`yum install rc-profiler-java`.
 - **Python:** `pip install runtimeconditions-profiler` into the workload's own virtual
-  environment — it finds binding packages through that environment's metadata — and put the
+  environment (it finds binding packages through that environment's metadata) and put the
   environment's `bin` directory on `PATH`. Do not use `pipx`, which would give it an
   environment of its own.
 
