@@ -93,14 +93,6 @@ rc profile generate \
   --out profile.yaml
 ```
 
-**Verified status today:** a workload importing only `runtimeconditions.io/x/rc/common@v0.3.0`
-generates a profile that passes `rc profile validate`, end to end. Adding
-`runtimeconditions.io/x/rc/env@v0.3.0` currently fails dependency artifact verification with:
-
-```text
-rc: runtimeconditions.io/x/rc/env dependency runtimeconditions.io/x/rc/common: dependency Go module archive SHA-256 mismatch
-```
-
 The published-module pattern above is the supported direction; treat that error as a
 known gap in the current published `env` release, not as a mistake in your workload.
 
