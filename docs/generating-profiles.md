@@ -10,20 +10,18 @@ This page covers Go, the profiler built into `rc`; TypeScript, Java, and Python 
 profile. Profiling analyzes declarations without executing the workload. Resolve the
 workload's Go binding dependencies before running these commands. Three prerequisites:
 
-1. **A Go toolchain on `PATH`.** Without one, generation fails with
+1. A Go toolchain on `PATH`. Without one, generation fails with
    `exec: "go": executable file not found in $PATH`. `rc` does not download Go for you.
-2. **`--dir` must point at a directory containing a `go.mod`.** Current releases fail fast:
+2. `--dir` must point at a directory containing a `go.mod`. Current releases fail fast:
 
    ```text
    rc: /path/to/dir: workload must have a go.mod: stat /path/to/dir/go.mod: no such file or directory
    ```
 
-   Older releases (for example the Homebrew v0.6.0 build) fell back to GOPATH mode and scanned
-   your entire home directory, spraying `operation not permitted` errors for TCC-protected
-   paths. Always point `--dir` at a Go module.
-3. **The workload must import published RC binding modules** (`runtimeconditions.io/x/rc/...`).
-   Bindings wired with `go.mod` `replace` directives to a local clone are rejected **by
-   design**:
+   Always point `--dir` at a Go module.
+3. The workload must import published RC binding modules (`runtimeconditions.io/x/rc/...`).
+   Bindings wired with `go.mod` `replace` directives to a local clone are rejected by
+   design:
 
    ```text
    rc: github.com/runtimeconditions/extensions/catalog/rc/common-integrations/go uses a go.mod replace; generated bindings must resolve to a published module version
