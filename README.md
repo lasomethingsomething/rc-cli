@@ -122,13 +122,27 @@ Every command has `--help` for its full flag list, e.g. `rc profile go generate 
 
 ## Ecosystem
 
-- [extensions](https://github.com/runtimeconditions/extensions) — first-party extensions and binding tooling
-- [rc-demos](https://github.com/runtimeconditions/rc-demos) — end-to-end demos with committed profiles
-- [go-rc-profiler](https://github.com/runtimeconditions/go-rc-profiler) — Go profiler, linked into `rc`
-- [ts-rc-profiler](https://github.com/runtimeconditions/ts-rc-profiler), [java-rc-profiler](https://github.com/runtimeconditions/java-rc-profiler), [python-rc-profiler](https://github.com/runtimeconditions/python-rc-profiler) — language add-ons
-- [ebpf-rc-profiler](https://github.com/runtimeconditions/ebpf-rc-profiler) — infers dependencies from syscall/network traffic instead of bindings
-- [backstage-plugin](https://github.com/runtimeconditions/backstage-plugin) — Backstage plugin for profiles
-- [homebrew-tools](https://github.com/runtimeconditions/homebrew-tools), [packages](https://github.com/runtimeconditions/packages) — Homebrew tap and apt/dnf/yum source
+Independently versioned repos around `rc-cli`. How each connects to the CLI:
+
+- [extensions](https://github.com/runtimeconditions/extensions) — `rc bindings` calls its
+  tooling as a library pinned to an exact commit in `distribution/components.lock.yaml`
+- [go-rc-profiler](https://github.com/runtimeconditions/go-rc-profiler) — compiled into `rc`
+  as a Go module, so Go profiling needs no separate install
+- [ts-rc-profiler](https://github.com/runtimeconditions/ts-rc-profiler),
+  [java-rc-profiler](https://github.com/runtimeconditions/java-rc-profiler),
+  [python-rc-profiler](https://github.com/runtimeconditions/python-rc-profiler) — add-ons
+  that `rc` finds on `PATH` and runs via `rc profile <language> ...` (see
+  [Language profilers](docs/language-profilers.md))
+- [rc-demos](https://github.com/runtimeconditions/rc-demos) — demos with committed profiles;
+  the [quickstart](#quickstart) validates one of them
+- [backstage-plugin](https://github.com/runtimeconditions/backstage-plugin) — consumes
+  profiles in Backstage; independent of `rc`
+- [ebpf-rc-profiler](https://github.com/runtimeconditions/ebpf-rc-profiler) — legacy,
+  experimental eBPF prototype (watches syscalls/network traffic); kept for reference, not
+  wired into `rc`
+- [homebrew-tools](https://github.com/runtimeconditions/homebrew-tools) and
+  [packages](https://github.com/runtimeconditions/packages) — distribution channels that
+  ship `rc` itself: the Homebrew tap and the apt/dnf/yum source
 
 ## Contributing
 
