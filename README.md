@@ -20,7 +20,7 @@ can read the same file and fulfill the need. No re-explaining, no drift between 
 reality.
 
 - Guide and concepts: <https://runtimeconditions.io>
-- Profile specification: <https://github.com/runtimeconditions/spec> — defines the profile
+- Profile specification: <https://github.com/runtimeconditions/spec> defines the profile
   format. `rc` pins the spec's core schema (checksum-verified) at build time and validates
   every profile against it.
 
@@ -47,7 +47,7 @@ Also:
 
 - Language profilers are separate add-ons. Go profiling is built into `rc`, so Go workloads
   need nothing else. TypeScript, Java, and Python profilers install through their own
-  channels — see [Language profilers](docs/language-profilers.md).
+  channels; see [Language profilers](docs/language-profilers.md).
 - To build the CLI yourself, see [Build from source](docs/build-from-source.md).
 
 ## Quickstart
